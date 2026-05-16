@@ -8,7 +8,7 @@ from luma.core.legacy.font import proportional, CP437_FONT
 
 # Setup SPI connection to MAX7219
 serial = spi(port=0, device=0, gpio=noop())
-device = max7219(serial, cascaded=1, block_orientation=0, rotate=0)
+device = max7219(serial, cascaded=4, block_orientation=90, rotate=0)
 
 # Set brightness (0-15)
 device.contrast(8)
