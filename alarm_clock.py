@@ -71,9 +71,9 @@ def main():
             hours = datetime.now().strftime('%H')
             minutes = datetime.now().strftime('%M')
             with canvas(device) as draw:
-                text(draw, (0, 1), hours, fill="white", font=proportional(CP437_FONT))
-                text(draw, (15, 1), ":" if toggle else " ", fill="white", font=proportional(TINY_FONT))
-                text(draw, (17, 1), minutes, fill="white", font=proportional(CP437_FONT))
+                text(draw, (-8, 1), hours, fill="white", font=proportional(CP437_FONT))
+                text(draw, (7, 1), ":" if toggle else " ", fill="white", font=proportional(TINY_FONT))
+                text(draw, (9, 1), minutes, fill="white", font=proportional(CP437_FONT))
             time.sleep(0.5)
 
 
