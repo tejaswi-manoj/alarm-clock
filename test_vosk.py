@@ -1,16 +1,19 @@
-import vosk
-import pyaudio
+import vosk 
+import sounddevice as sd
 import json
+
 
 model = vosk.Model("vosk-model-small-en-us-0.15")
 rec = vosk.KaldiRecognizer(model, 16000)
 
-mic = pyaudio.PyAudio()
-stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, input_device_index=2, frames_per_buffer=8192)
+print("Listening.. Say something!")
 
-print("Listening... say something!")
-while True:
-    data = stream.read(4096)
-    if rec.AcceptWaveform(data):
+def callback(indata, frames, time, status):
+    if rec.AcceptWaveform(bytes(indata)):
         result = json.loads(rec.Result())
-        print("Heard:", result["text"])
+        if result["text"]:
+            print("Heard:", result["text"])
+
+with sd.RawInputStream(samplerate=16000, blocksize=8192, device=2, dtype='int16', channels=1, callback=callback):
+    while True:
+        sd.sleep(100)
