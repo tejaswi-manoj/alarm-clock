@@ -14,6 +14,6 @@ def callback(indata, frames, time, status):
         if result["text"]:
             print("Heard:", result["text"])
 
-with sd.RawInputStream(samplerate=16000, blocksize=8192, device=2, dtype='int16', channels=1, callback=callback):
+with sd.RawInputStream(samplerate=16000, blocksize=8192, device=0, dtype='int16', channels=1, callback=callback):
     while True:
         sd.sleep(100)
