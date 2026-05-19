@@ -12,7 +12,7 @@ from luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT
 
 # ─── ALARM SETTINGS ───────────────────────────────────────────────────────────
 ALARM_HOUR   = 17
-ALARM_MINUTE = 55
+ALARM_MINUTE = 56
 ALARM_DURATION_SECONDS = 20
 # ──────────────────────────────────────────────────────────────────────────────
 
