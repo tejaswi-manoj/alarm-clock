@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import time
 import serial
+import threading
 from datetime import datetime
 
 from luma.led_matrix.device import max7219
@@ -11,7 +12,7 @@ from luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT
 
 # ─── ALARM SETTINGS ───────────────────────────────────────────────────────────
 ALARM_HOUR   = 17
-ALARM_MINUTE = 48
+ALARM_MINUTE = 46
 ALARM_DURATION_SECONDS = 20
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -38,7 +39,7 @@ def send_command(command, parameter1=0, parameter2=0):
     uart.write(query)
 
 def play_alarm():
-    send_command(0x06, 0, 15)   # Set volume to 20
+    send_command(0x06, 0, 15)   # Set volume to 15
     time.sleep(0.5)
     send_command(0x03, 0, 1)    # Play track 0001
     time.sleep(ALARM_DURATION_SECONDS)
@@ -94,7 +95,7 @@ def main():
         if now.hour == ALARM_HOUR and now.minute == ALARM_MINUTE and not alarm_fired:
             print("ALARM! Playing track...")
             alarm_fired = True
-            play_alarm()  # blocks for ALARM_DURATION_SECONDS
+            threading.Thread(target=play_alarm, daemon=True).start()
 
         # Reset alarm_fired after the alarm minute has passed
         if not (now.hour == ALARM_HOUR and now.minute == ALARM_MINUTE):
