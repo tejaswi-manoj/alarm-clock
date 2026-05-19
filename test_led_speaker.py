@@ -11,7 +11,7 @@ from luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT
 
 # ─── ALARM SETTINGS ───────────────────────────────────────────────────────────
 ALARM_HOUR   = 17
-ALARM_MINUTE = 45
+ALARM_MINUTE = 46
 ALARM_DURATION_SECONDS = 20
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ def send_command(command, parameter1=0, parameter2=0):
     uart.write(query)
 
 def play_alarm():
-    send_command(0x06, 0, 20)   # Set volume to 20
+    send_command(0x06, 0, 15)   # Set volume to 20
     time.sleep(0.5)
     send_command(0x03, 0, 1)    # Play track 0001
     time.sleep(ALARM_DURATION_SECONDS)
@@ -75,7 +75,7 @@ def animation(device, from_y, to_y):
 def main():
     serial_iface = spi(port=0, device=0, gpio=noop())
     device = max7219(serial_iface, cascaded=4, block_orientation=-90, blocks_arranged_in_reverse_order=False)
-    device.contrast(16)
+    device.contrast(8)
 
     print("Waiting for DFPlayer to boot...")
     time.sleep(2)
