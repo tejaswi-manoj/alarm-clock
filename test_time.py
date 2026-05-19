@@ -40,7 +40,6 @@ def animation(device, from_y, to_y):
         time.sleep(0.1)
         current_y += 1 if to_y > from_y else -1
 
-
 def main():
     # Setup for Banggood version of 4 x 8x8 LED Matrix (https://bit.ly/2Gywazb)
     serial = spi(port=0, device=0, gpio=noop())

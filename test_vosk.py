@@ -2,7 +2,6 @@ import vosk
 import sounddevice as sd
 import json
 
-
 model = vosk.Model("vosk-model-small-en-us-0.15")
 rec = vosk.KaldiRecognizer(model, 44100)
 
