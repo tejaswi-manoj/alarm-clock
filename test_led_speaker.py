@@ -11,8 +11,8 @@ from luma.core.legacy import text, show_message
 from luma.core.legacy.font import proportional, CP437_FONT, TINY_FONT
 
 # ─── ALARM SETTINGS ───────────────────────────────────────────────────────────
-ALARM_HOUR   = 21
-ALARM_MINUTE = 30
+ALARM_HOUR   = 23
+ALARM_MINUTE = 7
 ALARM_DURATION_SECONDS = 20
 # ──────────────────────────────────────────────────────────────────────────────
 
