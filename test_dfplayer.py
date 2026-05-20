@@ -49,9 +49,7 @@ send_command(0x03, 0, 1)
 
 # KEEP THE SCRIPT ALIVE
 # Without this loop, the script terminates and closes the serial line immediately!
-try:
-    print("Playing Track 0001... Press Ctrl+C to stop.")
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("\nStopping script.")
+print("Playing Track 0001... Press Ctrl+C to stop.")
+time.sleep(10)
+send_command(0x16, 0, 0) #stop command
+print("Stopped.")
