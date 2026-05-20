@@ -6,6 +6,7 @@ import json
 import re
 import numpy as np
 from datetime import datetime
+from gpiozero import Button
 
 from luma.led_matrix.device import max7219
 from luma.core.interface.serial import spi, noop
@@ -121,35 +122,42 @@ MINUTE_MAP = {
     "fifty seven":57, "fifty eight":58, "fifty nine":59
 }
 
+
 def parse_time(text):
     period = "am" if "am" in text else "pm"
 
     hour = None
     matched_hour_word = None
+    matched_hour_pos  = None
     for w in sorted(HOUR_MAP, key=len, reverse=True):
-        if re.search(rf'\b{w}\b', text):
+        m = re.search(rf'\b{w}\b', text)
+        if m:
             hour = HOUR_MAP[w]
             matched_hour_word = w
+            matched_hour_pos  = m.start()
             break
-    
-        # Remove the matched hour word so it doesn't interfere with minute parsing
-    if matched_hour_word:
-        text = re.sub(rf'\b{matched_hour_word}\b', '', text)
+
     minute = 0
-    for w in sorted(MINUTE_MAP, key=len, reverse=True):
-        if re.search(rf'\b{w}\b', text):
-            minute = MINUTE_MAP[w]
-            break
+    if matched_hour_pos is not None:
+        text_after_hour = text[matched_hour_pos + len(matched_hour_word):]
+        for w in sorted(MINUTE_MAP, key=len, reverse=True):
+            if re.search(rf'\b{w}\b', text_after_hour):
+                minute = MINUTE_MAP[w]
+                break
+
     if hour is None:
         return None, None
     if period == "pm" and hour != 12:
         hour += 12
     if period == "am" and hour == 12:
         hour = 0
-    return hour, minute
+    return hour, minute  
+
 
 def vosk_callback(indata, frames, time_info, status):
     global ALARM_HOUR, ALARM_MINUTE
+    if not listening:
+        return
     audio     = np.frombuffer(bytes(indata), dtype=np.int16).astype(np.float32)
     resampled = resample_poly(audio, up=1, down=3)
     resampled_bytes = resampled.astype(np.int16).tobytes()
@@ -195,6 +203,10 @@ def animation(device, from_y, to_y):
         time.sleep(0.1)
         current_y += 1 if to_y > from_y else -1
 
+
+button = Button(17)
+listening = False
+
 # --- Main ---
 def main():
     serial_iface = spi(port=0, device=0, gpio=noop())
@@ -208,8 +220,19 @@ def main():
     stream = sd.RawInputStream(samplerate=48000, blocksize=8192, device=0,
                                 dtype='int16', channels=1, callback=vosk_callback)
     stream.start()
-    print("Listening for alarm commands...")
 
+    def on_press():
+        global listening
+        listening = True
+        print("Listening...")
+
+    def on_release():
+        global listening
+        listening = False
+        print("Stopped listening.")
+
+    button.when_pressed = on_press
+    button.when_released = on_release
     animation(device, 8, 1)
 
     alarm_fired = False
