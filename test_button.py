@@ -2,7 +2,7 @@ from gpiozero import Button
 from signal import pause
 
 # Define the GPIO pin your button is connected to
-button = Button(17)
+button = Button(22)
 
 # Define actions for button events
 button.when_pressed = lambda: print("Button was pressed!")
