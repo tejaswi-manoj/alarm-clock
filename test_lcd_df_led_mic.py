@@ -6,7 +6,7 @@ import json
 import re
 import numpy as np
 from datetime import datetime
-from gpiozero import Button
+from gpiozero import Button, OutputDevice
 
 from luma.led_matrix.device import max7219
 from luma.core.interface.serial import spi, noop
@@ -152,6 +152,21 @@ def parse_time(text):
         hour = 0
     return hour, minute
 
+
+def toggle_snooze():
+    global snoozing, ALARM_HOUR, ALARM_MINUTE
+    if not snoozing:
+        print("Snooze pressed: stopping alarm, starting motor")
+        send_command(0x16)       # stop the song
+        relay.on()               # start motor (water spray)
+        snoozing = True
+    else:
+        print("Snooze pressed again: stopping motor")
+        relay.off()              # stop motor
+        snoozing = False
+        ALARM_HOUR = None        # clear alarm so it doesn't retrigger
+        ALARM_MINUTE = None
+
 def vosk_callback(indata, frames, time_info, status):
     global ALARM_HOUR, ALARM_MINUTE
     if not listening:
@@ -220,7 +235,11 @@ def update_lcd_idle():
         time.sleep(10)  # update every 10 seconds
 
 button = Button(17)
+snooze_button = Button(22, bounce_time=0.3, pull_up=True)
+relay = OutputDevice(13, active_high=False, initial_value=True)
 listening = False
+snoozing = False
+snooze_button.when_pressed = toggle_snooze
 
 # --- Main ---
 def main():
